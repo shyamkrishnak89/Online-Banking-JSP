@@ -13,7 +13,7 @@ public class GetCon {
 	static{
 		try {
 			 Class.forName("com.mysql.cj.jdbc.Driver");
-			 con=DriverManager.getConnection("jdbc:mysql://localhost:3306/test_db","root","root");
+			 con=DriverManager.getConnection("jdbc:mysql://localhost:3306/mydatabase","root","root");
 		} catch (ClassNotFoundException e) {
 			
 			e.printStackTrace();
@@ -24,6 +24,7 @@ public class GetCon {
 		
 	}
 	public static Connection getCon(){
+		System.out.println("DB Connected");
 		return con;
 	}
 
