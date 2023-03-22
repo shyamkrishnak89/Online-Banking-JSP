@@ -1,17 +1,19 @@
 package onlineBank;
 
-import jakarta.servlet.RequestDispatcher;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * Servlet implementation class CreateServlet
  */
+@WebServlet("/CreateServlet")
 public class CreateServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -29,8 +31,8 @@ public class CreateServlet extends HttpServlet {
 		
 		String adderess=request.getParameter("adderess");
 		
-		String ph=request.getParameter("phone");
-		double phone=Double.parseDouble(ph);
+		String phone=request.getParameter("phone");
+	
 		//double mname=Double.parseDouble(num);
 		//String country=request.getParameter("country");
 		
@@ -39,7 +41,7 @@ public class CreateServlet extends HttpServlet {
 	    
 		if(status>0){
 			out.print("WELCOME! YOUR ACCOUNT HAS OPENED");
-			RequestDispatcher rd=request.getRequestDispatcher("index.jsp");
+			RequestDispatcher rd=request.getRequestDispatcher("first.jsp");
 			rd.include(request, response);
 		}
 		else{
