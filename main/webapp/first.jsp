@@ -1,9 +1,14 @@
- 
+<%@page import="onlineBank.LoginDao"%>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+    
+    
 
 <%@page import="onlineBank.LoginDao"%>  
 <jsp:useBean id="obj" class="onlineBank.LoginBean"/>  
   
 <jsp:setProperty property="*" name="obj"/>  
+
  
 
 
@@ -21,7 +26,7 @@
 <head>
 
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<title>Transfer - DreamZbank</title>
+<title>Landing - DreamZbank</title>
   <meta content="" name="description">
   <meta content="" name="keywords">
 
@@ -56,8 +61,17 @@ var sds = document.getElementById("dum");
 
 </head>
 <%  
-if(session.getAttribute("session") != null){
+if(session.getAttribute("session") == null){
+		boolean status=LoginDao.validate(obj);  
+	if(status){  
+	out.println("You r successfully logged in");  
+	session.setAttribute("session","TRUE");  
+	session.setAttribute("uname", obj.getUsername());
+	session.setAttribute("pass", obj.getPass());
+	session.setAttribute("acno", obj.getAccountNo());
 %>
+
+
 <body>
 
 <!-- ======= Header ======= -->
@@ -289,7 +303,7 @@ if(session.getAttribute("session") != null){
 
   </header><!-- End Header -->
 
-<!-- ======= Sidebar ======= -->
+   <!-- ======= Sidebar ======= -->
   <aside id="sidebar" class="sidebar">
 
     <ul class="sidebar-nav" id="sidebar-nav">
@@ -361,12 +375,12 @@ if(session.getAttribute("session") != null){
 <main id="main" class="main">
 
     <div class="pagetitle">
-      <h1>Account Balance</h1>
+      <h1>Account Info</h1>
       <nav>
         <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a href="Dashboard.jsp">Home</a></li>
+          <li class="breadcrumb-item"><a href="Dashboard.jsp">DashBoard</a></li>
           
-          <li class="breadcrumb-item active">Balance</li>
+          <li class="breadcrumb-item active">General Info</li>
         </ol>
       </nav>
     </div><!-- End Page Title -->
@@ -377,31 +391,64 @@ if(session.getAttribute("session") != null){
 
           <div class="card">
             <div class="card-body">
-              <h5 class="card-title">Balance</h5>
-              <table>
-              <tr>
-			<td align="center" valign="middle" bgcolor="red"><h4>Account Info</h4></td>
-		</tr>
-		<tr>
-			<td>
+              <h5 class="card-title">Here is your Account Info.</h5>
 <%
-{
-out.print("the target account balance is");
-out.print(request.getAttribute("target account A"));
-out.println("reduced balance is");
-out.print(request.getAttribute("account B"));
-	}
 
- %>
-		</td>
-		</tr>
+try {
+		    Connection con1=GetCon.getCon();
+			//PreparedStatement ps1=con1.prepareStatement("Select max(accountno) from newaccount");
+			PreparedStatement ps1=con1.prepareStatement("Select max(accountno) from newaccount");
+           
+            ResultSet rs1=ps1.executeQuery();
+            while(rs1.next()){
+				int  accountno=rs1.getInt(1);
+				request.setAttribute("accountno",accountno);
+				}
+		    Integer accountno=(Integer)request.getAttribute("accountno");
+			Connection con=GetCon.getCon();
+			PreparedStatement ps=con.prepareStatement("Select * from NEWACCOUNT where accountno='"+accountno+"'");
+           // ps.setInt(1,accountno);
+			ResultSet rs=ps.executeQuery();
+			out.print("<table class=\"table\">");
+			out.print("<tr><th scope=\"col\">ACCOUNT NO</th><th scope=\"col\">USERNAME</th><th scope=\"col\">PASSWORD</th><th scope=\"col\">AMOUNT</th><th scope=\"col\">ADDRESS</th><th scope=\"col\">PHONE</th></tr>");
+			while(rs.next()){
+				
+				session.setAttribute("accountno",accountno);
+				
+				System.out.print(accountno);
+				out.print("<tr class=\"table-info\">");
+				out.print("<td>" + rs.getInt(1) + "</td>");
+				out.print("<td>" + rs.getString(2) + "</td>");
+				out.print("<td>" + rs.getString(3) + "</td>");
+				out.print("<td>" + rs.getInt(5) + "</td>");
+				
+				out.print("<td>" + rs.getString(6) + "</td>");
+				out.print("<td>" + rs.getString(7) + "</td>");
+				
+				
+				//out.print("<td><a href='DeleteServlet' >Delete</a></td>");
+			    
+				out.print("</tr>");
+			    
+			}
+			out.print("</table>");
+			
+			/*out.print("<table align='right'width='40%'>");
+			out.print("<tr><td><a href='Compose.html'>COMPOSE</a></td></tr>");
+			out.print("<tr><td><a href='InboxServlet'>INBOX</a></td></tr>");
+			out.print("<tr><td><a href='LogoutServlet'>LOGOUT</a></td></tr>");
+			//out.print("<tr><td><a href='DeleteServlet'>Delete</a></td></tr>");
+			
+			out.print("</table>");*/
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+			
+			%>
 
- 
 
-    		</table>
-	
-	
-              
+
+              </table>
               <!-- End Default Table Example -->
             </div>
           </div>
@@ -411,8 +458,7 @@ out.print(request.getAttribute("account B"));
           
           
           </main><!-- End #main -->
-      
-<!-- ======= Footer ======= -->
+          <!-- ======= Footer ======= -->
   <footer id="footer" class="footer">
     <div class="copyright">
       &copy; Copyright <strong><span>DreamZbank</span></strong>. All Rights Reserved
@@ -442,6 +488,13 @@ out.print(request.getAttribute("account B"));
   <script src="assets/js/main.js"></script>
   </body>
   
+
+
+
+
+
+
+
 <%
 	
 	
@@ -451,19 +504,27 @@ out.print(request.getAttribute("account B"));
 	}  
 	else  
 	{  
-	out.print("Please login first");  
+	out.print("Sorry, Username, Account Number or Password error");  
 	%>  
 	<jsp:include page="ind.jsp"></jsp:include>  
 	<%  
 	}  
+}
 	%>  
-	</html>
-	
-
-
-<%@ page autoFlush="true" buffer="1094kb"%>
-<%@ page import="java.sql.*"%>
-<%@ page import="java.io.*" %>
-<%@ page import="javax.*"%>
-<%@ page import="onlineBank.*" %>
   
+  </html>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+

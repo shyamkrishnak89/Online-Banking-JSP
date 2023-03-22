@@ -1,4 +1,5 @@
- 
+
+   
 
 <%@page import="onlineBank.LoginDao"%>  
 <jsp:useBean id="obj" class="onlineBank.LoginBean"/>  
@@ -17,11 +18,13 @@
 <%@ page import="javax.*"%>
 <%@ page import="onlineBank.*" %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<%@page import="org.apache.jasper.tagplugins.jstl.core.Import"%>
+
 <html>
 <head>
 
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<title>Transfer - DreamZbank</title>
+<title>Show Transactions - DreamZbank</title>
   <meta content="" name="description">
   <meta content="" name="keywords">
 
@@ -58,6 +61,7 @@ var sds = document.getElementById("dum");
 <%  
 if(session.getAttribute("session") != null){
 %>
+
 <body>
 
 <!-- ======= Header ======= -->
@@ -361,12 +365,12 @@ if(session.getAttribute("session") != null){
 <main id="main" class="main">
 
     <div class="pagetitle">
-      <h1>Account Balance</h1>
+      <h1>Account Transaction Summary</h1>
       <nav>
         <ol class="breadcrumb">
           <li class="breadcrumb-item"><a href="Dashboard.jsp">Home</a></li>
           
-          <li class="breadcrumb-item active">Balance</li>
+          <li class="breadcrumb-item active">Transactions View</li>
         </ol>
       </nav>
     </div><!-- End Page Title -->
@@ -377,38 +381,146 @@ if(session.getAttribute("session") != null){
 
           <div class="card">
             <div class="card-body">
-              <h5 class="card-title">Balance</h5>
-              <table>
-              <tr>
-			<td align="center" valign="middle" bgcolor="red"><h4>Account Info</h4></td>
-		</tr>
-		<tr>
-			<td>
+              <h5 class="card-title">Account Balance</h5>
 <%
-{
-out.print("the target account balance is");
-out.print(request.getAttribute("target account A"));
-out.println("reduced balance is");
-out.print(request.getAttribute("account B"));
-	}
-
- %>
-		</td>
-		</tr>
-
- 
-
-    		</table>
+     String num=request.getParameter("accountno");
+		int accountno=Integer.parseInt(num);
+        String username=request.getParameter("username");
+		String password=request.getParameter("password");
+		String from = request.getParameter("from");
+		String to = request.getParameter("to");
+		System.out.println(from);
+		System.out.println(to);
+	    boolean status=verifyLogin1.checkLogin(accountno,username,password);
+		//if(status==true){
+		//	out.print("Welcome    " + username);
+		try {
+		if(status==true){
+			out.print("Welcome    " + username);
+		
+			Connection con=GetCon.getCon();
+			PreparedStatement ps=con.prepareStatement("Select * from transactions where accountNo=? and Trans_date between ? and ?");
+            ps.setInt(1,accountno);
+            ps.setString(2,from);
+            ps.setString(3,to);
+			ResultSet rs=ps.executeQuery();
+			out.print("<table class=\"table\" id=\"historyTable\">");
+			out.print("<tr><th scope=\"col\">TRANSACTION ID</th><th scope=\"col\">TYPE</th><th scope=\"col\">AMOUNT</th><th scope=\"col\">BALANCE</th><th scope=\"col\">REMARKS</th><th scope=\"col\">DATE</th></tr>");
+			while(rs.next()){
+			    int accountno1=rs.getInt(2);
+				session.setAttribute("accountno",accountno1);
+				
+				
+				
+				out.print("<tr scope=\"col\">");
+				out.print("<td>" + rs.getInt(1) + "</td>");
+				out.print("<td>" + rs.getString(3) + "</td>");
+				out.print("<td>" + rs.getInt(4) + "</td>");
+				out.print("<td>" + rs.getInt(5) + "</td>");
+				out.print("<td>" + rs.getString(6) + "</td>");
+				out.print("<td>" + rs.getString(7) + "</td>");
+				out.print("</tr>");
+			
+			}
+			out.print("</table>");
 	
-	
-              
+			out.print("<input type=\"button\"  class=\"btn btn-primary\"  onclick=\"generate()\" value=\"Export To PDF\" />");
+		
+			
+			
+		}
+		else{
+			out.print("Please check your username and Password");
+			request.setAttribute("balance","Please check your username and Password");
+			%>
+			<jsp:forward page="Transactions.jsp"></jsp:forward> 
+			<% 
+			}
+		 }catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		//}
+		
+			//}
+			%>
+			
+			
+			
+
+
+              </table>
               <!-- End Default Table Example -->
             </div>
           </div>
           </div>
           </div>
           </section>
-          
+          <script type="text/javascript">  
+function generate() {  
+    var doc = new jsPDF('p', 'pt', 'letter');  
+    var htmlstring = '';  
+    var tempVarToCheckPageHeight = 0;  
+    var pageHeight = 0;  
+    pageHeight = doc.internal.pageSize.height;  
+    specialElementHandlers = {  
+        // element with id of "bypass" - jQuery style selector  
+        '#bypassme': function(element, renderer) {  
+            // true = "handled elsewhere, bypass text extraction"  
+            return true  
+        }  
+    };  
+    margins = {  
+        top: 150,  
+        bottom: 60,  
+        left: 40,  
+        right: 40,  
+        width: 600  
+    };  
+    var y = 20;  
+    doc.setLineWidth(2);  
+    doc.text(250, y , "DreamZbank");  
+    doc.text(200, y = y + 30, "TRANSACTION HISTORY");  
+    doc.text(50, y = y + 30,"Account No.: <%=num%>");
+    doc.text(250, y ,"Account Holder's Name: <%=username%>");
+    doc.text(50, y = y + 30,"From: <%=from%>");
+    doc.text(250, y ,"To: <%=to%>");
+    doc.setLineWidth(1.0); 
+    doc.line(30, 30, 560, 30);
+    doc.setLineWidth(4.0); 
+    doc.line(30, 120, 560, 120);
+    doc.autoTable({  
+        html: '#historyTable',  
+      
+        startY: 200,  
+        theme: 'striped',  
+        columnStyles: {  
+            0: {  
+                cellWidth: 80,  
+            },  
+            1: {  
+                cellWidth: 80,  
+            },  
+            2: {  
+                cellWidth: 80,  
+            },  
+            3: {  
+                cellWidth: 80,  
+            },  
+            4: {  
+                cellWidth: 80,  
+            }, 
+            5: {  
+                cellWidth: 80,  
+            }
+        },  
+        styles: {  
+            minCellHeight: 40  
+        }  
+    })  
+    doc.save('<%="TranRep("+num+")"+from+"-"+to%>.pdf');  
+}  
+</script>  
           
           </main><!-- End #main -->
       
@@ -437,6 +549,11 @@ out.print(request.getAttribute("account B"));
   <script src="assets/vendor/simple-datatables/simple-datatables.js"></script>
   <script src="assets/vendor/tinymce/tinymce.min.js"></script>
   <script src="assets/vendor/php-email-form/validate.js"></script>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.min.js"></script>  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.6/jspdf.plugin.autotable.min.js"></script> 
+      
+  
 
   <!-- Template Main JS File -->
   <script src="assets/js/main.js"></script>
@@ -458,12 +575,8 @@ out.print(request.getAttribute("account B"));
 	}  
 	%>  
 	</html>
-	
 
 
 <%@ page autoFlush="true" buffer="1094kb"%>
-<%@ page import="java.sql.*"%>
-<%@ page import="java.io.*" %>
-<%@ page import="javax.*"%>
-<%@ page import="onlineBank.*" %>
+
   

@@ -1,4 +1,3 @@
- 
 
 <%@page import="onlineBank.LoginDao"%>  
 <jsp:useBean id="obj" class="onlineBank.LoginBean"/>  
@@ -19,9 +18,50 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
+<SCRIPT LANGUAGE="JavaScript">
+function dil(form)
+{
+   for(var i=0; i<form.elements.length; i++)
+   {
+		if(form.elements[i].value == "")
+		{
+		   alert("Fill out all Fields")
+		   document.F1.accountno.focus()
+		   console.log(elements[i]);
+		   return false
+		}
+   }
 
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<title>Transfer - DreamZbank</title>
+   if(isNaN(document.F1.accountno.value))
+   {
+       alert("Accountno must  be  number & can't be null")
+	   document.F1.accountno.value=""
+	   document.F1.accountno.focus()
+	   return false
+   }
+   if(!isNaN(document.F1.username.value))
+   {
+       alert("User Name  must  be  char's & can't be null")
+	   document.F1.username.value=""
+	   document.F1.username.focus()
+	   return false
+   }
+
+   if(!isNaN(document.F1.password.value))
+   {
+       alert("Password  must  be  char's & can't be null")
+	   document.F1.password.value=""
+	   document.F1.password.focus()
+	   return false
+   }
+   
+   return true   
+}
+</SCRIPT>
+<meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title>Account Fund Transfer</title>
   <meta content="" name="description">
   <meta content="" name="keywords">
 
@@ -44,8 +84,6 @@
 
   <!-- Template Main CSS File -->
   <link href="assets/css/style.css" rel="stylesheet">
-
-<link href="style.css" rel="stylesheet" type="text/css">
 <script type="text/javascript">
 function ctck()
 {
@@ -59,7 +97,6 @@ var sds = document.getElementById("dum");
 if(session.getAttribute("session") != null){
 %>
 <body>
-
 <!-- ======= Header ======= -->
   <header id="header" class="header fixed-top d-flex align-items-center">
 
@@ -289,7 +326,7 @@ if(session.getAttribute("session") != null){
 
   </header><!-- End Header -->
 
-<!-- ======= Sidebar ======= -->
+  <!-- ======= Sidebar ======= -->
   <aside id="sidebar" class="sidebar">
 
     <ul class="sidebar-nav" id="sidebar-nav">
@@ -358,60 +395,73 @@ if(session.getAttribute("session") != null){
     </ul>
 
   </aside><!-- End Sidebar-->
-<main id="main" class="main">
+
+
+  <main id="main" class="main">
 
     <div class="pagetitle">
-      <h1>Account Balance</h1>
+      <h1>Fund Transfer</h1>
       <nav>
         <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a href="Dashboard.jsp">Home</a></li>
-          
-          <li class="breadcrumb-item active">Balance</li>
+          <li class="breadcrumb-item"><a href="Dashboard.jsp">DashBoard</a></li>
+       
+          <li class="breadcrumb-item active">Fund Transfer</li>
         </ol>
       </nav>
     </div><!-- End Page Title -->
-
-    <section class="section">
-      <div class="row">
-        <div class="col-lg-12">
-
-          <div class="card">
+    <div class="card">
             <div class="card-body">
-              <h5 class="card-title">Balance</h5>
-              <table>
-              <tr>
-			<td align="center" valign="middle" bgcolor="red"><h4>Account Info</h4></td>
-		</tr>
-		<tr>
-			<td>
-<%
-{
-out.print("the target account balance is");
-out.print(request.getAttribute("target account A"));
-out.println("reduced balance is");
-out.print(request.getAttribute("account B"));
-	}
+            <div><%if(request.getAttribute("balance")!=null)
+			{
+			out.print(request.getAttribute("balance"));
+			}
+			
+			 %></div>
+              <h5 class="card-title">Transfer fund to another account</h5>
 
- %>
-		</td>
-		</tr>
+              <!-- Horizontal Form -->
+              <form name=F1 onSubmit="return dil(this)" action="transfer.jsp">
+                <div class="row mb-3">
+                  <label for="inputEmail3" class="col-sm-2 col-form-label">User Name:</label>
+                  <div class="col-sm-10">
+                    <input type="text" class="form-control" id="inputText" name="username" >
+                  </div>
+                </div>
+                <div class="row mb-3">
+                  <label for="inputEmail3" class="col-sm-2 col-form-label">Account No:</label>
+                  <div class="col-sm-10">
+                    <input type="text" class="form-control" id="inputEmail" name="accountno">
+                  </div>
+                </div>
+                <div class="row mb-3">
+                  <label for="inputPassword3" class="col-sm-2 col-form-label">Password</label>
+                  <div class="col-sm-10">
+                    <input type="password" class="form-control" id="inputPassword" name="password">
+                  </div>
+                </div>
+                <div class="row mb-3">
+                  <label for="inputEmail3" class="col-sm-2 col-form-label">Target Account No:</label>
+                  <div class="col-sm-10">
+                    <input type="text" class="form-control" id="inputEmail" name="taccountno">
+                  </div>
+                </div>
+                <div class="row mb-3">
+                  <label for="inputPassword3" class="col-sm-2 col-form-label">Amount</label>
+                  <div class="col-sm-10">
+                    <input type="text" class="form-control" id="inputPassword" name="amount">
+                  </div>
+                </div>
+                
+                <div class="text-center">
+                  <button type="submit" class="btn btn-primary">Make Withdrawal</button>
+                  <button type="reset" class="btn btn-secondary">Reset</button>
+                </div>
+              </form><!-- End Horizontal Form -->
 
- 
-
-    		</table>
-	
-	
-              
-              <!-- End Default Table Example -->
             </div>
           </div>
-          </div>
-          </div>
-          </section>
+          </main>
           
-          
-          </main><!-- End #main -->
-      
 <!-- ======= Footer ======= -->
   <footer id="footer" class="footer">
     <div class="copyright">
@@ -425,7 +475,7 @@ out.print(request.getAttribute("account B"));
       Designed by <a href="#">Satva Web Solutions</a>
     </div>
   </footer><!-- End Footer -->
-
+  
   <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
   <!-- Vendor JS Files -->
@@ -440,8 +490,15 @@ out.print(request.getAttribute("account B"));
 
   <!-- Template Main JS File -->
   <script src="assets/js/main.js"></script>
-  </body>
-  
+          
+
+
+<script type="text/javascript">
+document.onload = ctck();
+</script>
+
+</body>
+
 <%
 	
 	
@@ -457,13 +514,4 @@ out.print(request.getAttribute("account B"));
 	<%  
 	}  
 	%>  
-	</html>
-	
-
-
-<%@ page autoFlush="true" buffer="1094kb"%>
-<%@ page import="java.sql.*"%>
-<%@ page import="java.io.*" %>
-<%@ page import="javax.*"%>
-<%@ page import="onlineBank.*" %>
-  
+</html>
