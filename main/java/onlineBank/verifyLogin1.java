@@ -1,5 +1,4 @@
 package onlineBank;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -24,4 +23,5 @@ public class verifyLogin1 {
 		}
 		return status;
 	}
+
 }
