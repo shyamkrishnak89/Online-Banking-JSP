@@ -3,10 +3,9 @@ package onlineBank;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 
-import jakarta.servlet.ServletContextEvent;
-import jakarta.servlet.ServletContextListener;
-
-public class MyListener implements ServletContextListener{
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
+public class MyListener implements ServletContextListener {
 	public void contextInitialized(ServletContextEvent arg0) {
 		int status=0;
 		Connection con=null;
@@ -53,5 +52,6 @@ public class MyListener implements ServletContextListener{
 		System.out.println("project undeployed");
 		
 	}
+
 
 }
