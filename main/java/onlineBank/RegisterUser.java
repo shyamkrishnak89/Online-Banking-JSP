@@ -7,7 +7,7 @@ import java.sql.SQLException;
 public class RegisterUser {
 	static int status=0;
 	//int accountno=1;
-	public static int register(String username,String password,String repassword,double amount,String adderess,double phone){
+	public static int register(String username,String password,String repassword,double amount,String adderess,String phone){
 		//public static int register(String email,String password,String gender,String country,String name){
 
 		Connection con=GetCon.getCon();
@@ -20,7 +20,7 @@ public class RegisterUser {
 			ps.setString(3,repassword);
 			ps.setDouble(4,amount);
 			ps.setString(5,adderess);
-			ps.setDouble(6,phone);
+			ps.setString(6,phone);
 			
 			status=ps.executeUpdate();
 			
@@ -31,4 +31,5 @@ public class RegisterUser {
 		return status;
 		
 	}
+
 }
